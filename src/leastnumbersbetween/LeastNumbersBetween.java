@@ -5,23 +5,30 @@ import java.util.List;
 
 public class LeastNumbersBetween {
 
+  /*
+  What is returned, if list is null, empty or too small
+   */
+  private final int CANT_COMPARE = 0;
+
+  private final int INIT = -1;
+
   public int getLeastNumbersBetween(List<Integer> originalList){
     if (originalList == null){
-      return 0;
+      return CANT_COMPARE;
     }
     List<Integer> list = removeDuplicatesAndSort(originalList);
-    int answer = -1;
+    int answer = INIT;
     /*
     Init ans to negative, because there cannot be negative
     amount of numbers between
      */
     if (list.size() < 2){
-      return 0;
+      return CANT_COMPARE;
     }
 
     for (int i = 0; i < list.size()-1; i++){
       int numbersBetween = Math.abs(list.get(i) - list.get(i+1)) -1;
-      if (answer < 0 || numbersBetween < answer){
+      if (answer == INIT || numbersBetween < answer){
         answer = numbersBetween;
       }
     }
@@ -48,18 +55,19 @@ public class LeastNumbersBetween {
 
 
   private int findPlace(List<Integer> list, int element, int min, int max ){
+    final int REPEATED_VALUE = -1;
     if (min == max){
       if (element < list.get(min)){
         return min;
       }else if (element > list.get(min)){
         return min+1;
       }else {
-        return -1;
+        return REPEATED_VALUE;
       }
     }
     int index = min+max/2;
     if (element == list.get(index)){
-      return -1;
+      return REPEATED_VALUE;
     }else if(element > list.get(index)){
       return findPlace(list, element, index+1, max);
     }else{
