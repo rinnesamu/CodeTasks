@@ -35,6 +35,28 @@ class LeastNumbersBetweenTest {
   }
 
   @Test
+  @DisplayName("Test with negative numberse in list")
+  void testNegatives(){
+    list.add(-20);
+    list.add(-10);
+    list.add(-30);
+    assertEquals(0, least.getLeastNumbersBetween(list),
+      "Error with negatives");
+
+    list = new ArrayList<>();
+    list.add(1);
+    list.add(5);
+    list.add(-1);
+    assertEquals(3, least.getLeastNumbersBetween(list),
+      "Error with negatives");
+
+    list = new ArrayList<>();
+    list.add(-1);
+    assertEquals(0, least.getLeastNumbersBetween(list),
+      "Error with negatives");
+  }
+
+  @Test
   @DisplayName("Testing with only one item in list")
   void tesWithOneItem(){
     list.add(2);
@@ -94,6 +116,22 @@ class LeastNumbersBetweenTest {
     list.add(10);
     assertEquals(2, least.getLeastNumbersBetween(list),
       "Error with multiple same values in list");
+  }
+
+  @Test
+  @DisplayName("Testing with only one value multiple times")
+  void testWithSameValueMultipleTimes(){
+    list.add(1317);
+    list.add(1317);
+    list.add(1317);
+    list.add(1317);
+    list.add(1317);
+    list.add(1317);
+    list.add(1317);
+    list.add(1317);
+    list.add(1317);
+    assertEquals(0, least.getLeastNumbersBetween(list),
+      "Error with only one unique value in list");
   }
 
   @Test
