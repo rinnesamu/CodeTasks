@@ -23,14 +23,14 @@ class LeastNumbersBetweenTest {
   @Test
   @DisplayName("Testing with paramter null")
   void testNoList(){
-    assertEquals(-1, least.getLeastNumbersBetween(null),
+    assertEquals(0, least.getLeastNumbersBetween(null),
       "Error with null parameter");
   }
 
   @Test
   @DisplayName("Testing with empty list")
   void testEmptyList(){
-    assertEquals(-1, least.getLeastNumbersBetween(list),
+    assertEquals(0, least.getLeastNumbersBetween(list),
       "Error with empty list");
   }
 
@@ -79,10 +79,10 @@ class LeastNumbersBetweenTest {
   void testWithMultipleSameItems(){
     list.add(2);
     list.add(7);
-    list.add(11);
+    list.add(12);
     list.add(2);
     list.add(9);
-    assertEquals(0, least.getLeastNumbersBetween(list),
+    assertEquals(1, least.getLeastNumbersBetween(list),
       "Error with multiple same values in list");
 
     list = new ArrayList<>();
@@ -90,9 +90,9 @@ class LeastNumbersBetweenTest {
     list.add(7);
     list.add(2);
     list.add(7);
-    list.add(4);
-    list.add(4);
-    assertEquals(0, least.getLeastNumbersBetween(list),
+    list.add(10);
+    list.add(10);
+    assertEquals(2, least.getLeastNumbersBetween(list),
       "Error with multiple same values in list");
   }
 
