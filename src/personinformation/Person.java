@@ -19,12 +19,6 @@ public class Person {
   private Date dateOfDeath;
   private List<Building> properties = new ArrayList<>();
 
-
-  /*
-  Probably shouldn't have public default constructor, sine all of the people
-  have at least some information like name and some kind of social security
-  number. Still leaving it here for testing purposes
-   */
   public Person(){ }
 
   public Person(String firstName, String lastName, String socialSecurityNumber)
@@ -77,6 +71,13 @@ public class Person {
       throw new ValidationException(ssn);
     }
     setSSN(ssn);
+  }
+
+  public void changeAddress(Address address) throws ValidationException {
+    if (address == null){
+      throw new ValidationException("Address is null");
+    }
+    this.address = address;
   }
 
   public boolean markDateOfDeath(Date date){
@@ -133,7 +134,7 @@ public class Person {
     if(socialSecurityNumber == null){
       return false;
     }
-    return socialSecurityNumber.matches("^\\d{6}[+A-]\\d{3}[A-Y0-9]");
+    return Validator.validateSSN(socialSecurityNumber);
   }
 
   private void parseBirthday(String socialSecurityNumber) {
@@ -187,10 +188,6 @@ public class Person {
 
   public Address getAddress() {
     return address;
-  }
-
-  public void setAddress(Address address) {
-    this.address = address;
   }
 
   public List<Person> getParents() {

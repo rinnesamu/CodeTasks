@@ -262,6 +262,22 @@ class PersonTest {
     } catch (ValidationException e) {
       e.printStackTrace();
     }
+  }
 
+  @Test
+  @DisplayName("Test change address")
+  void testChangeAddress(){
+    Person person = new Person();
+    Address address = new Address();
+    assertThrows(ValidationException.class, () -> {
+      person.changeAddress(null);
+    });
+    try{
+      person.changeAddress(address);
+      assertEquals(address, person.getAddress(),
+        "Couldn't change address");
+    } catch (ValidationException e) {
+      e.printStackTrace();
+    }
   }
 }

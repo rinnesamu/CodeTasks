@@ -12,6 +12,7 @@ class BuildingTest {
 
   private final String YEAR = "2020";
   private final double AREA = 120;
+  private final String USE = "living";
 
 
   Building building;
@@ -56,7 +57,19 @@ class BuildingTest {
   }
 
   @Test
-  @DisplayName("Test change owenr")
+  @DisplayName("Test change intended use")
+  void testChangeIntendedUse(){
+    try{
+      building.changeIntendedUse(USE);
+      assertEquals(USE, building.getIntendedUse(),
+        "Couldn't change intended use");
+    } catch (ValidationException e) {
+      e.printStackTrace();
+    }
+  }
+
+  @Test
+  @DisplayName("Test change owner")
   void testChangeOwner(){
     try {
       Person firstOwner = new Person();

@@ -38,7 +38,7 @@ public class Building {
   }
 
   public void changeIntendedUse(String use) throws ValidationException {
-    if(Validator.validateStringWithoutNumbers(use)){
+    if(!Validator.validateStringWithoutNumbers(use)){
       throw new ValidationException(use);
     }
     this.intendedUse = use;
