@@ -1,64 +1,95 @@
 package personinformation;
 
+import javax.xml.bind.ValidationException;
+
 public class Address {
 
   private String country;
   private String region;
   private String city;
   private String postalCode;
-  private Building building;
-  private int apartmentNumber;
+  private String streetAddress;
 
   public Address(){}
 
+
+  public void changeCountry(String country) throws ValidationException {
+    if (!Validator.validateStringWithoutNumbers(country)){
+      throw new ValidationException(country);
+    }
+    this.country = country;
+  }
+
+  public void changeRegion(String region) throws ValidationException{
+    if (!Validator.validateStringWithoutNumbers(region)){
+      throw new ValidationException(region);
+    }
+    this.region = region;
+  }
+
+  public void changeCity(String city) throws  ValidationException{
+    if (!Validator.validateStringWithoutNumbers(city)){
+      throw new ValidationException(city);
+    }
+    this.city = city;
+  }
+
+  public void changePostalCode(String postalCode) throws ValidationException{
+    if (!Validator.validateStringWithOnlyNumbers(postalCode, 5)){
+      throw new ValidationException(postalCode);
+    }
+    this.postalCode = postalCode;
+  }
+
+  public void changeStreetAddress(String address) throws ValidationException {
+    if (address == null || address.length() == 0){
+      throw new ValidationException(address);
+    }
+    this.streetAddress = address;
+  }
+
+
+  public String addressAsString(){
+    StringBuilder sb = new StringBuilder();
+    if (streetAddress != null){
+      sb.append(streetAddress).append(", ");
+    }
+    if (postalCode != null){
+      sb.append(postalCode).append(" ");
+    }
+    if (city != null){
+      sb.append(city).append(", ");
+    }
+    if (region != null){
+      sb.append(region).append(", ");
+    }
+    if (country != null){
+      sb.append(country);
+    }
+    return sb.toString();
+  }
+
   /*
-  Basic getters and setters, nothing "important" really
+  Basic getters, nothing "important" really
    */
   public String getCountry() {
     return country;
-  }
-
-  public void setCountry(String country) {
-    this.country = country;
   }
 
   public String getRegion() {
     return region;
   }
 
-  public void setRegion(String region) {
-    this.region = region;
-  }
-
   public String getCity() {
     return city;
-  }
-
-  public void setCity(String city) {
-    this.city = city;
   }
 
   public String getPostalCode() {
     return postalCode;
   }
 
-  public void setPostalCode(String postalCode) {
-    this.postalCode = postalCode;
-  }
 
-  public Building getBuilding() {
-    return building;
-  }
-
-  public void setBuilding(Building building) {
-    this.building = building;
-  }
-
-  public int getApartmentNumber() {
-    return apartmentNumber;
-  }
-
-  public void setApartmentNumber(int apartmentNumber) {
-    this.apartmentNumber = apartmentNumber;
+  public String getStreetAddress(){
+    return this.streetAddress;
   }
 }

@@ -11,8 +11,8 @@ public class Person {
   private String firstName;
   private String lastName;
   private String socialSecurityNumber;
-  private String nationality;
   private Address address;
+  private int apartmentNumber;
   private List<Person> parents = new ArrayList<>();
   private List<Person> children = new ArrayList<>();
   private Date birthDay;
@@ -95,18 +95,30 @@ public class Person {
     return parseDateToPrint(this.dateOfDeath);
   }
 
+  public boolean giveNewProperty(Building building){
+    if (building == null || properties.contains(building)){
+      return false;
+    }
+    properties.add(building);
+    return true;
+  }
+
+  public boolean removeProperty(Building building){
+    if (building == null || !properties.contains(building)){
+      return false;
+    }
+    properties.remove(building);
+    return true;
+  }
+
   /*
    Validates name. At this point only checks that given string is not null
    and it must not contain any numbers. Could be extended to every special
    character that are not allowed in .
    */
   private boolean validateName(String firstName, String lastName){
-    if(firstName == null || firstName.length() == 0 ||
-      lastName == null || lastName.length() == 0){
-      return false;
-    }
-    boolean correctFirst = !firstName.matches(".*\\d+.*");
-    boolean correctLast = !lastName.matches(".*\\d+.*");
+    boolean correctFirst = Validator.validateStringWithoutNumbers(firstName);
+    boolean correctLast = Validator.validateStringWithoutNumbers(lastName);
     return correctLast && correctFirst;
   }
 
@@ -159,7 +171,7 @@ public class Person {
 
 
   /*
-  Basic getters and setters, nothing "important" really
+  Basic getters, nothing "important" really.
    */
   public String getFirstName() {
     return firstName;
@@ -171,14 +183,6 @@ public class Person {
 
   public String getSocialSecurityNumber() {
     return socialSecurityNumber;
-  }
-
-  public String getNationality() {
-    return nationality;
-  }
-
-  public void setNationality(String nationality) {
-    this.nationality = nationality;
   }
 
   public Address getAddress() {
@@ -206,7 +210,4 @@ public class Person {
     return dateOfDeath;
   }
 
-  public void setDateOfDeath(Date dateOfDeath) {
-    this.dateOfDeath = dateOfDeath;
-  }
 }
