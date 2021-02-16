@@ -2,6 +2,7 @@ package personinformation;
 
 
 import javax.xml.bind.ValidationException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -12,11 +13,11 @@ public class Person {
   private String socialSecurityNumber;
   private String nationality;
   private Address address;
-  private List<Person> parents;
-  private List<Person> children;
+  private List<Person> parents = new ArrayList<>();
+  private List<Person> children = new ArrayList<>();
   private Date birthDay;
   private Date dateOfDeath;
-  private List<Building> properties;
+  private List<Building> properties = new ArrayList<>();
 
 
   /*
@@ -36,24 +37,29 @@ public class Person {
     }
     this.firstName = firstName;
     this.lastName = lastName;
-    this.socialSecurityNumber = socialSecurityNumber;
+    setSSN(socialSecurityNumber);
 
   }
-
-  public boolean markAsParent(Person parent){
-    if (parents.size() >= 2 || parents.contains(parent) ||
-      parent.getBirthDay().after(this.birthDay)){
+  public boolean markAsChild(Person child){
+    if (child == null || children.contains(child)){
       return false;
     }
-    parents.add(parent);
-    return true;
-  }
-
-  public boolean markAsChildren(Person child){
-    if (children.contains(child) || this.birthDay.after(child.getBirthDay())){
+    if (!child.markAsParent(this)){
+      /*
+      If this person cannot be marked as parent of the child, neither
+      connections should be added.
+       */
       return false;
     }
     children.add(child);
+    return true;
+  }
+
+  private boolean markAsParent(Person parent){
+    if (parents.size() >= 2 || parents.contains(parent)){
+      return false;
+    }
+    parents.add(parent);
     return true;
   }
 
@@ -70,7 +76,23 @@ public class Person {
     if(!validateSocialSecurityNumber(ssn)){
       throw new ValidationException(ssn);
     }
-    this.socialSecurityNumber = ssn;
+    setSSN(ssn);
+  }
+
+  public boolean markDateOfDeath(Date date){
+    if (this.birthDay == null || date == null || date.before(this.birthDay)){
+      return false;
+    }
+    this.dateOfDeath = date;
+    return true;
+  }
+
+  public String checkBirthdayAsString(){
+    return parseDateToPrint(this.birthDay);
+  }
+
+  public String checkDateOfDeathAsString(){
+    return parseDateToPrint(this.dateOfDeath);
   }
 
   /*
@@ -89,7 +111,8 @@ public class Person {
   }
 
   /*
-  Check that entered social security number is valid
+  Check that entered social security number is valid. Was going to add checks
+  for first 4 digits, but would wee too time consuming for this project.
   Works only with Finnish ssn, additional clauses should be added to check
   others too. Also missing some checks like last digit should be reminder of
   first 9 / 31.
@@ -101,6 +124,39 @@ public class Person {
     return socialSecurityNumber.matches("^\\d{6}[+A-]\\d{3}[A-Y0-9]");
   }
 
+  private void parseBirthday(String socialSecurityNumber) {
+    int day = Integer.parseInt(socialSecurityNumber.substring(0,2));
+    int month = Integer.parseInt(socialSecurityNumber.substring(2,4));
+    int year = Integer.parseInt(socialSecurityNumber.substring(4,6));
+    String test = socialSecurityNumber.substring(6,7);
+    switch (test) {
+      case "+":
+        year += 1800;
+        break;
+      case "-":
+        year += 1900;
+        break;
+      case "A":
+        year += 2000;
+        break;
+    }
+    this.birthDay = new Date(year - 1900, month-1, day);
+  }
+
+  private void setSSN(String ssn){
+    this.socialSecurityNumber = ssn;
+    parseBirthday(ssn);
+  }
+
+  private String parseDateToPrint(Date date){
+    if (date == null){
+      return "Date not added";
+    }
+    String DateAsString =
+      date.getDate() + "." + (+date.getMonth()+1) + "." + (+date.getYear()+1900);
+    return DateAsString;
+  }
+
 
   /*
   Basic getters and setters, nothing "important" really
@@ -109,24 +165,12 @@ public class Person {
     return firstName;
   }
 
-  public void setFirstName(String firstName) {
-    this.firstName = firstName;
-  }
-
   public String getLastName() {
     return lastName;
   }
 
-  public void setLastName(String lastName) {
-    this.lastName = lastName;
-  }
-
   public String getSocialSecurityNumber() {
     return socialSecurityNumber;
-  }
-
-  public void setSocialSecurityNumber(String socialSecurityNumber) {
-    this.socialSecurityNumber = socialSecurityNumber;
   }
 
   public String getNationality() {
@@ -149,25 +193,14 @@ public class Person {
     return parents;
   }
 
-  public void setParents(List<Person> parents) {
-    this.parents = parents;
-  }
-
   public List<Person> getChildren() {
     return children;
-  }
-
-  public void setChildren(List<Person> children) {
-    this.children = children;
   }
 
   public Date getBirthDay() {
     return birthDay;
   }
 
-  public void setBirthDay(Date birthDay) {
-    this.birthDay = birthDay;
-  }
 
   public Date getDateOfDeath() {
     return dateOfDeath;

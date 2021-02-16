@@ -5,13 +5,16 @@ import org.junit.jupiter.api.Test;
 
 import javax.xml.bind.ValidationException;
 
+import java.util.Date;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class PersonTest {
 
   private final String VALID_FIRST_NAME = "Test";
   private final String VALID_LAST_NAME = "Person";
-  private final String VALID_SOCIAL_NUMBER = "123456-123K";
+  private final String VALID_SOCIAL_NUMBER = "111292-123F";
+  private final Date VALID_DEATH = new Date(2011-1900, 5-1, 5);
 
   /*
   Constructor tests
@@ -66,19 +69,19 @@ class PersonTest {
   @DisplayName("Test illegal social security number")
   void testConstructorIllegalSocialSecurityNumber(){
     assertThrows(ValidationException.class, () -> {
-      new Person(VALID_FIRST_NAME, VALID_LAST_NAME, "12345a-123K");
+      new Person(VALID_FIRST_NAME, VALID_LAST_NAME, "11129A-123F");
     });
     assertThrows(ValidationException.class, () -> {
-      new Person(VALID_FIRST_NAME, VALID_LAST_NAME, "1234562123K");
+      new Person(VALID_FIRST_NAME, VALID_LAST_NAME, "1112922123F");
     });
     assertThrows(ValidationException.class, () -> {
-      new Person(VALID_FIRST_NAME, VALID_LAST_NAME, "123456-12AK");
+      new Person(VALID_FIRST_NAME, VALID_LAST_NAME, "111292-12AF");
     });
     assertThrows(ValidationException.class, () -> {
-      new Person(VALID_FIRST_NAME, VALID_LAST_NAME, "123456-123Z");
+      new Person(VALID_FIRST_NAME, VALID_LAST_NAME, "111292-123Z");
     });
     assertThrows(ValidationException.class, () -> {
-      new Person(VALID_FIRST_NAME, VALID_LAST_NAME, "123456-123");
+      new Person(VALID_FIRST_NAME, VALID_LAST_NAME, "111292-123");
     });
   }
 
@@ -150,20 +153,115 @@ class PersonTest {
 
   @Test
   @DisplayName("Test changeSSn with incorrect ssn")
-  void testChaneSSNIncorrecValue(){
+  void testChaneSSNIncorrectValue(){
     Person person = new Person();
     assertThrows(ValidationException.class, () -> {
-      person.changeSocialSecurityNumber("12312A-123K");
+      person.changeSocialSecurityNumber("11A292-123F");
     });
     assertThrows(ValidationException.class, () -> {
-      person.changeSocialSecurityNumber("123126S123K");
+      person.changeSocialSecurityNumber("111292S123F");
     });
     assertThrows(ValidationException.class, () -> {
-      person.changeSocialSecurityNumber("123126-1A3K");
+      person.changeSocialSecurityNumber("111292-1Z3F");
     });
     assertThrows(ValidationException.class, () -> {
-      person.changeSocialSecurityNumber("123126-123Z");
+      person.changeSocialSecurityNumber("111292-123Z");
+    });
+    assertThrows(ValidationException.class, () -> {
+      person.changeSocialSecurityNumber("111292-123");
     });
   }
 
+  /*
+  Tests for adding children
+   */
+
+  @Test
+  @DisplayName("Testing addChildren with correct values")
+  void testMarkAsChild(){
+    Person parent = new Person();
+    Person secondParent = new Person();
+    Person child = new Person();
+
+    assertTrue(parent.markAsChild(child),
+      "first parent couldn't be added");
+    assertTrue(child.getParents().contains(parent),
+      "first parent wasn't found from children");
+    assertTrue(secondParent.markAsChild(child),
+      "second parent couldn't be added");
+    assertTrue(child.getParents().contains(secondParent),
+      "second parent wasn't found from children");
+    assertTrue(parent.getChildren().contains(child),
+      "child wasn't found from first parent");
+    assertTrue(secondParent.getChildren().contains(child),
+      "child wasn't found from second parent");
+
+  }
+
+  /*
+  Test for birthday and date of death
+   */
+
+  @Test
+  @DisplayName("Test adding legal date of death")
+  void testLegalDateOfDeath(){
+    Person person = new Person();
+    try{
+      person.changeSocialSecurityNumber(VALID_SOCIAL_NUMBER);
+      assertTrue(person.markDateOfDeath(VALID_DEATH),
+        "Cannot add valid date of death");
+    } catch (ValidationException e) {
+      e.printStackTrace();
+    }
+  }
+
+  @Test
+  @DisplayName("Test adding illegal date of death")
+  void addIllegalDateOfDeath(){
+    try{
+      Person person = new Person();
+      assertFalse(person.markDateOfDeath(null),
+        "null were added as date of death");
+      assertEquals("Date not added", person.checkDateOfDeathAsString(),
+        "wrong return when date of death not added yet");
+      assertFalse(person.markDateOfDeath(VALID_DEATH),
+        "date of death was added without birthday");
+      assertEquals("Date not added", person.checkDateOfDeathAsString(),
+        "wrong return when date of death not added yet");
+      person.changeSocialSecurityNumber(VALID_SOCIAL_NUMBER);
+      assertFalse(person.markDateOfDeath(new Date(0, 1, 1)),
+        "Date of death is earlier than birthday");
+      assertEquals("Date not added", person.checkDateOfDeathAsString(),
+        "wrong return when date of death not added yet");
+    } catch (ValidationException e) {
+      e.printStackTrace();
+    }
+  }
+
+  @Test
+  @DisplayName("Test checking dates without adding them first")
+  void testNullDates(){
+    Person person = new Person();
+    assertEquals("Date not added", person.checkDateOfDeathAsString(),
+      "wrong return when date of death not added yet");
+    assertEquals("Date not added", person.checkBirthdayAsString(),
+      "wrong return when birthday not added yet");
+  }
+
+  @Test
+  @DisplayName("Test checking dates when already added")
+  void testCheckingDates(){
+    Person person = new Person();
+    try{
+      person.changeSocialSecurityNumber(VALID_SOCIAL_NUMBER);
+      assertEquals("11.12.1992", person.checkBirthdayAsString(),
+        "Birthday string didn't match");
+      person.markDateOfDeath(VALID_DEATH);
+      assertEquals("5.5.2011", person.checkDateOfDeathAsString(),
+        "Date of death string didn't match");
+    } catch (ValidationException e) {
+      e.printStackTrace();
+    }
+
+  }
 }
